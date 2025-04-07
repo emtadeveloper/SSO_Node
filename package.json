@@ -1,0 +1,19 @@
+{
+  "name": "SSO_Node",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "scripts": {
+    "start": "nodemon app.js"
+  },
+  "dependencies": {
+    "connect-redis": "^8.0.2",
+    "dotenv": "^16.4.7",
+    "dotenv-expand": "^12.0.1",
+    "ejs": "^3.1.10",
+    "express": "^5.1.0",
+    "express-session": "^1.18.1",
+    "ioredis": "^5.6.0",
+    "jsonwebtoken": "^9.0.2"
+  }
+}
