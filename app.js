@@ -16,6 +16,28 @@ app.set("view engine", "ejs");
 
 app.set("views", path.join(__dirname, "html"));
 
+const ioredis = require('ioredis');
+const ioredisClient = new ioredis("127.0.0.1:6379")
+
+const session = require('express-session');
+const RedisStore = require('connect-redis').RedisStore;
+
+app.use(session({
+    store: new RedisStore({ client: ioredisClient, prefix: "sso_server_sess:" }),
+    secret: "869sa8d8sa96d8sa6d8sa68d68sa9d689as6d98sa6fsdg6f6gd8sf698",
+    name: "sso-server-app",
+    resave: false,
+    saveUninitialized: true,
+    cookie: {
+        httpOnly: true,
+        secure: false,
+        maxAge: 10 * 60 * 60 * 1000, // 10 ساعت
+        sameSite: "lax"
+    }
+}));
+
+
+
 app.get("/", async (req, res) => {
     return res.render("home")
 })
