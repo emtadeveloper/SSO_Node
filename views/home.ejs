@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home SSO Server</title>
+</head>
+<body>
+    <h1>Home SSO Server</h1>
+
+    <% if (user) { %>
+        <h2><%= user %></h2>
+        <br>
+        <a href="/logout">Logut</a>
+    <% }else{ %>
+        <a href="/register?url=<%= url %>">Register</a> <br>
+        <a href="/login?url=<%= url %>">Login</a> <br>    
+    <% } %>
+
+      
+
+</body>
+</html>

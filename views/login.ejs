@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+</head>
+<body>
+    <h1>Login</h1>
+    <%=  msg %>    
+    <br>
+    <br>
+    a@a.com / 123456 <br>
+    b@b.com / 000 <br>
+    <br>
+    <form action="/login?url=<%= url %>" method="post">
+
+        <div>
+            email : <input type="text" name="email">
+        </div>
+        <br>
+        <div>
+            password : <input type="password" name="password">
+        </div>
+        <br>
+        <div>
+           <input type="submit" value="Login">
+        </div>
+        <br>
+        <a href="/?url=<%= url %>">Back</a>
+        
+
+
+    </form>
+</body>
+</html>

@@ -1,63 +1,33 @@
 const express = require('express');
-const app = express();
-const path = require('path');
-const dotenv = require('dotenv');
+const dotenv = require('dotenv')
 const dotenvExpand = require('dotenv-expand');
+const session = require('./config/session.config.js');
+const path = require('path');
+
 dotenvExpand.expand(dotenv.config());
-const session = require('express-session');
-const RedisStore = require('connect-redis').RedisStore;
-const ioredis = require('ioredis');
-const ioredisClient = new ioredis("127.0.0.1:6379");
-module.exports = { ioredisClient }
-// Middlewares
-app.use(express.static(path.join(__dirname, "assets")));
-app.use(express.urlencoded({ extended: true }));
-app.use(express.json());
 
-app.set("view engine", "ejs");
-app.set("views", path.join(__dirname, "html"));
-
-app.use(session({
-    store: new RedisStore({ client: ioredisClient, prefix: "sso_server_sess:" }),
-    secret: "78a7sd9asd90as7d07as86d86sa7d6as786d87asd57" || "secret",
-    name: "sso-server-app",
-    resave: false,
-    saveUninitialized: true,
-    cookie: {
-        httpOnly: true,
-        secure: false,
-        maxAge: 10 * 60 * 60 * 1000,
-        sameSite: "lax"
-    }
-}));
-
-// Home route
-app.get("/", async (req, res) => {
-    const url = req.query?.url ?? '';
-    const data = {
-        "url": url
-    };
-
-    if (req.session?.user_id && req.session.email) {
-        data['user'] = req.session.email;
-    } else {
-        delete req.session.user_id;
-        delete req.session.email;
-        data['user'] = '';
-    }
-
-    console.log("URL Received: ", url);
-    return res.render("home", data);
-});
-
-// Auth Routes
-const authRoutes = require('./routers/auth');
-
-app.use(authRoutes);
-
-// 404 & error handler
-app.use((req, res) => res.status(404).send("404 !"));
-app.use((err, req, res, next) => res.status(500).send(err.toString()));
-
+const app = express();
 const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`SSO Server is run on port ${PORT}`));
+
+// Static + Body Parser
+app.use(express.static('public/assets'));
+app.use(express.urlencoded({ extended: true, limit: '10mb' }));
+app.use(express.json({ limit: '10mb' }));
+
+// View Engine
+app.set('view engine', 'ejs');
+app.set('views', path.join(__dirname, 'views'));
+
+// Session
+app.use(session);
+
+// Routes
+app.use('/', require('./routes/index.routes'));
+app.use('/', require('./routes/auth.routes'));
+
+// Error Handling
+app.use(require('./middlewares/errorHandler'));
+
+app.listen(PORT, () => {
+    console.log(`SSO server is running on port ${PORT}...`);
+});
