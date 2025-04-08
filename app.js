@@ -35,7 +35,10 @@ app.use(session({
 // Home route
 app.get("/", async (req, res) => {
     const url = req.query?.url ?? '';
-    const data = { url };
+    const data = {
+        "url": url
+    };
+
     if (req.session?.user_id && req.session.email) {
         data['user'] = req.session.email;
     } else {
@@ -43,6 +46,8 @@ app.get("/", async (req, res) => {
         delete req.session.email;
         data['user'] = '';
     }
+
+    console.log("URL Received: ", url);
     return res.render("home", data);
 });
 
