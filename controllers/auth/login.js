@@ -25,20 +25,19 @@ exports.getLogin = (req, res) => {
 
 exports.postLogin = async (req, res) => {
     const { email, password } = req.body;
+    const user = await db.login(email, password);
+    const redirectUrl = req.query.url || ''
+    console.log(redirectUrl);
     if (req.session?.user_id) {
         return res.redirect('/');
     }
-
-    const user = await db.login(email, password);
 
     if (user?.id) {
         req.session.user_id = user.id;
         req.session.email = user.email;
 
-        const redirectUrl = req.query.url || '/';
-        console.log("Redirecting to:", redirectUrl);
         return res.redirect(redirectUrl);
     } else {
-        return res.redirect("/login?msg=error1");
+        return res.redirect("/login?msg=error1&url=" + redirectUrl);
     }
 };

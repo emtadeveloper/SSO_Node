@@ -8,7 +8,7 @@
   <body>
     <h1>Login</h1>
     <h5><%= msg %></h5>
-    <form action="/login" method="post">
+    <form action="/login?url=<%= url %>" method="post">
       <div>email : <input type="text" name="email" /></div>
       <br />
       <div>passowrd : <input type="password" name="password" /></div>
