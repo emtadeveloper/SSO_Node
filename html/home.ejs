@@ -4,9 +4,26 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Home</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        margin: 40px;
+      }
+      a {
+        margin-right: 10px;
+      }
+    </style>
   </head>
   <body>
-    <a href="/register">register</a>
-    <a href="/login">login</a>
+    <h1>Welcome to SSO Server</h1>
+
+    <% if (user && user !== '') { %>
+    <h2>Hello, <%= user %> 👋</h2>
+    <br />
+    <a href="/logout">Logout</a>
+    <% } else { %>
+    <a href="/register">Register</a>
+    <a href="/login">Login</a>
+    <% } %>
   </body>
 </html>
