@@ -4,12 +4,11 @@ const path = require('path');
 const dotenv = require('dotenv');
 const dotenvExpand = require('dotenv-expand');
 dotenvExpand.expand(dotenv.config());
-
 const session = require('express-session');
 const RedisStore = require('connect-redis').RedisStore;
 const ioredis = require('ioredis');
 const ioredisClient = new ioredis("127.0.0.1:6379");
-
+module.exports = { ioredisClient }
 // Middlewares
 app.use(express.static(path.join(__dirname, "assets")));
 app.use(express.urlencoded({ extended: true }));

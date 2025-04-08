@@ -7,6 +7,7 @@ const logoutController = require('../controllers/auth/logout');
 
 router.get('/login', loginController.getLogin);
 router.post('/login', loginController.postLogin);
+router.post('/verifyToken', loginController.verifyToken);
 
 router.get('/register', registerController.getRegister);
 router.post('/register', registerController.postRegister);
