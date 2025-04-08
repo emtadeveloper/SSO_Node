@@ -1,30 +1,26 @@
+const express = require('express');
+const app = express();
+const path = require('path');
 const dotenv = require('dotenv');
 const dotenvExpand = require('dotenv-expand');
 dotenvExpand.expand(dotenv.config());
 
-const express = require('express');
-const app = express();
-const path = require('path');
-const db = require('./db');
+const session = require('express-session');
+const RedisStore = require('connect-redis').RedisStore;
+const ioredis = require('ioredis');
+const ioredisClient = new ioredis("127.0.0.1:6379");
 
-const PORT = process.env.PORT || 3000;
-
+// Middlewares
 app.use(express.static(path.join(__dirname, "assets")));
-app.use(express.urlencoded({ extended: true, limit: "10mb" }));
-app.use(express.json({ limit: "10mb" }));
+app.use(express.urlencoded({ extended: true }));
+app.use(express.json());
 
 app.set("view engine", "ejs");
 app.set("views", path.join(__dirname, "html"));
 
-const ioredis = require('ioredis');
-const ioredisClient = new ioredis("127.0.0.1:6379");
-
-const session = require('express-session');
-const RedisStore = require('connect-redis').RedisStore;
-
 app.use(session({
     store: new RedisStore({ client: ioredisClient, prefix: "sso_server_sess:" }),
-    secret: "869sa8d8sa96d8sa6d8sa68d68sa9d689as6d98sa6fsdg6f6gd8sf698",
+    secret: "78a7sd9asd90as7d07as86d86sa7d6as786d87asd57" || "secret",
     name: "sso-server-app",
     resave: false,
     saveUninitialized: true,
@@ -36,11 +32,10 @@ app.use(session({
     }
 }));
 
+// Home route
 app.get("/", async (req, res) => {
-    const url = req.query?.url ?? ''
-    const data = {
-        "url": url
-    };
+    const url = req.query?.url ?? '';
+    const data = { url };
     if (req.session?.user_id && req.session.email) {
         data['user'] = req.session.email;
     } else {
@@ -48,71 +43,17 @@ app.get("/", async (req, res) => {
         delete req.session.email;
         data['user'] = '';
     }
-    console.log(data);
     return res.render("home", data);
 });
 
-app.get("/login", async (req, res) => {
-    if (req.session?.user_id) {
-        return res.redirect('/');
-    }
-    const data = {};
-    if (req.query.msg === "error1") {
-        data['msg'] = 'email or password incorrect';
-        return res.json(data);
-    }
-    return res.render("login", data);
-});
+// Auth Routes
+const authRoutes = require('./routers/auth');
 
-app.post("/login", async (req, res) => {
-    const { email, password } = req.body;
-    if (req.session?.user_id) {
-        return res.redirect('/');
-    }
+app.use(authRoutes);
 
-    const user = await db.login(email, password); // اگر async هست
+// 404 & error handler
+app.use((req, res) => res.status(404).send("404 !"));
+app.use((err, req, res, next) => res.status(500).send(err.toString()));
 
-    if (user?.id) {
-        req.session.user_id = user.id;
-        req.session.email = user.email;
-        return res.redirect("/");
-    } else {
-        return res.redirect("/login?msg=error1");
-    }
-});
-
-
-app.get("/register", async (req, res) => {
-    if (req.session?.user_id) {
-        return res.redirect('/');
-    }
-    return res.render("register");
-});
-
-app.post("/register", async (req, res) => {
-    if (req.session?.user_id) {
-        return res.redirect('/');
-    }
-    return res.send("post register !");
-});
-
-app.get("/logout", async (req, res) => {
-    if (req.session?.user_id) {
-        delete req.session.user_id;
-        delete req.session.email;
-    }
-
-    return res.redirect("/");
-});
-
-app.use(async (req, res) => {
-    return res.status(404).send("404 !");
-});
-
-app.use(async (error, req, res, next) => {
-    return res.status(500).send(error.toString()); // اصلاح toSring
-});
-
-app.listen(PORT, async () => {
-    console.log("SSO Server is run on port " + PORT);
-});
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`SSO Server is run on port ${PORT}`));
