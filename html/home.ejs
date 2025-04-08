@@ -3,7 +3,7 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Home</title>
+    <title>SSO Server</title>
     <style>
       body {
         font-family: Arial, sans-serif;
@@ -22,8 +22,8 @@
     <br />
     <a href="/logout">Logout</a>
     <% } else { %>
-    <a href="/register">Register</a>
-    <a href="/login">Login</a>
+    <a href="/register?url=<%=url%>">Register</a>
+    <a href="/login?url=<%=url%>">Login</a>
     <% } %>
   </body>
 </html>

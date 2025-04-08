@@ -37,7 +37,10 @@ app.use(session({
 }));
 
 app.get("/", async (req, res) => {
-    const data = {};
+    const url = req.query?.url ?? ''
+    const data = {
+        "url": url
+    };
     if (req.session?.user_id && req.session.email) {
         data['user'] = req.session.email;
     } else {
