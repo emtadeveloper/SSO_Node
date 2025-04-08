@@ -17,7 +17,6 @@ exports.homePage = async (req, res) => {
 exports.verifyToken = async (req, res) => {
     try {
         const { consumer_url, token, sso_token } = req.body;
-        console.log(consumer[consumer_url], consumer[consumer_url], sso_token, consumer_url);
         if (!consumer[consumer_url] || consumer[consumer_url] !== sso_token)
             return res.json({ status: -2, msg: 'invalid consumer or token' });
 
